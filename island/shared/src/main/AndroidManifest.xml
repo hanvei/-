@@ -1,0 +1,53 @@
+<manifest package="com.oasisfeng.island.shared" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" android:maxSdkVersion="25" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- PendingIntentShuttle (see below) -->
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" tools:ignore="ProtectedPermissions" /> <!-- AbstractAppLaunchShortcut -->
+    <uses-permission android:name="android.permission.GET_APP_OPS_STATS" tools:ignore="ProtectedPermissions" /> <!-- AppOpsCompat -->
+
+    <application android:name="com.oasisfeng.island.IslandApplication" tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon">
+
+        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+
+        <provider android:name="com.oasisfeng.island.util.Users"
+                  android:initOrder="1000"
+                  android:authorities="${applicationId}.users"
+                  android:directBootAware="true"
+                  android:exported="false" />
+
+        <activity android:name="com.oasisfeng.island.shuttle.ShuttleCarrierActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:directBootAware="true"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="com.oasisfeng.island.action.SHUTTLE" />
+                <category android:name="com.oasisfeng.island.category.PARENT_PROFILE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <provider android:authorities="com.oasisfeng.island.shuttle" android:exported="false"
+                  android:name="com.oasisfeng.island.shuttle.ShuttleProvider" android:grantUriPermissions="true"
+                  android:directBootAware="true" />
+
+        <!-- Disable the default heavy-weight initialization of Firebase -->
+        <provider android:name="com.google.firebase.provider.FirebaseInitProvider"
+                  android:authorities="${applicationId}.firebaseinitprovider"
+                  tools:node="remove" tools:ignore="ExportedContentProvider"/>
+
+        <!-- Google Analytics (required for devices without GMS) -->
+        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.google.android.gms.analytics.AnalyticsService" android:exported="false" />
+
+        <!-- Workaround issue of Firebase Analytics - IllegalStateException: Not allowed to start service Intent ... app is in background uid ... -->
+        <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver" android:enabled="@bool/until_api_24" tools:replace="android:enabled" />
+
+    </application>
+
+</manifest>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:comment="http://schemas.android.com/tools">
+
+    <data>
+        <import type="com.oasisfeng.island.model.AppViewModel.State" />
+        <variable name="apps" type="com.oasisfeng.island.model.AppListViewModel" />
+        <variable name="app" type="com.oasisfeng.island.model.AppViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingBottom="2dp"
+        android:clipToPadding="false" comment:_clipToPadding="Ensure the correct visual effect of elevation"
+        android:background="@{safeUnbox(app.selected) ? @color/background_highlight : @color/background}">
+
+        <TextView
+            android:id="@+id/entry_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="2dp" comment:_paddingTop="Carefully adjusted padding for visually better elevation shadow"
+            android:paddingStart="32dp" comment:_paddingStart_paddingEnd="Actual start/end padding should minus 16dp (the negative parent padding)"
+            android:paddingEnd="32dp"
+            android:background="?android:attr/selectableItemBackground"
+
+            comment:popUpEffect="The 'pop up' effect"
+            android:elevation="@{safeUnbox(app.selected) ? @dimen/elevation_card_resting : 0}" tools:elevation="@dimen/elevation_card_resting"
+            android:outlineProvider="bounds"
+            android:scaleX="@{safeUnbox(app.selected) ? 1.01f : 1}"
+            android:scaleY="@{safeUnbox(app.selected) ? 1.01f : 1}"
+
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="start|center_vertical"
+            android:textColor="@{app.state == State.Alive ? @color/state_alive : app.state == State.Frozen ? @color/state_frozen : @color/state_other}"
+            android:textAlignment="viewStart"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textIsSelectable="false"
+            android:drawablePadding="16dp"
+
+            android:text="@{app.info.label}" tools:text="Island"
+            android:drawableStart="@{app.icon ?? @drawable/app_icon_empty}" tools:drawableStart="@mipmap/ic_launcher"
+            android:drawableEnd="@{apps.mSelection == app &amp;&amp; app.info.launchable &amp;&amp; (app.state == State.Alive || app.state == State.Frozen) ? @drawable/ic_launch_24dp : null}"
+            android:onViewAttachedToWindow="@{app::onViewAttached}"
+            android:onClick="@{v -> apps.onItemClick(app)}"
+            bind:onDrawableEndClick="@{v -> apps.onItemLaunchIconClick(context, app.info())}"/>
+
+    </FrameLayout>
+
+</layout>

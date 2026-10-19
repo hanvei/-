@@ -1,0 +1,26 @@
+name: Android demo
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-30' 'platforms;android-27' 'build-tools;30.0.3'
+      - name: Build APK
+        working-directory: island
+        run: bash gradlew :assembly:assembleCompleteDebug --stacktrace --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-space-demo-debug
+          path: island/assembly/build/outputs/apk/complete/debug/*.apk
+          if-no-files-found: error
