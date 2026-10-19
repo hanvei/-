@@ -49,10 +49,17 @@ public abstract class PackageManager {
 	public static final int GET_SERVICES                = 0x00000004;
 	public static final int GET_PROVIDERS               = 0x00000008;
 	public static final int GET_DISABLED_COMPONENTS     = 0x00000200;
+	public static final int MATCH_DISABLED_COMPONENTS   = GET_DISABLED_COMPONENTS;
 	public static final int GET_PERMISSIONS             = 0x00001000;
 	public static final int GET_UNINSTALLED_PACKAGES    = 0x00002000;
+	public static final int MATCH_UNINSTALLED_PACKAGES  = GET_UNINSTALLED_PACKAGES;
 	public static final int GET_DISABLED_UNTIL_USED_COMPONENTS = 0x00008000;
+	public static final int MATCH_DEFAULT_ONLY          = 0x00010000;
 	public static final int MATCH_ALL					= 0x00020000;
+	public static final int COMPONENT_ENABLED_STATE_DEFAULT = 0;
+	public static final int COMPONENT_ENABLED_STATE_ENABLED = 1;
+	public static final int COMPONENT_ENABLED_STATE_DISABLED = 2;
+	public static final int DONT_KILL_APP = 1;
 	public static final int PERMISSION_GRANTED = 0;
 	public static final int PERMISSION_DENIED = -1;
 

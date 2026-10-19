@@ -18,6 +18,7 @@
 package android.content;
 
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -38,6 +39,7 @@ import static android.os.Build.VERSION_CODES.P;
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public abstract class ContentResolver {
+	public static final String SCHEME_CONTENT = "content";
 
 	/* Critical hidden APIs implemented by ContextImpl.ApplicationContentResolver. They must be overridden by ContentResolver forwarder. */
 
@@ -64,6 +66,22 @@ public abstract class ContentResolver {
 	}
 
 	public void notifyChange(Uri uri, ContentObserver observer) {
+		throw new RuntimeException("Stub!");
+	}
+
+	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+		throw new RuntimeException("Stub!");
+	}
+
+	public int update(Uri uri, ContentValues values, String where, String[] selectionArgs) {
+		throw new RuntimeException("Stub!");
+	}
+
+	public void registerContentObserver(Uri uri, boolean notifyForDescendants, ContentObserver observer) {
+		throw new RuntimeException("Stub!");
+	}
+
+	public Bundle call(Uri uri, String method, String arg, Bundle extras) {
 		throw new RuntimeException("Stub!");
 	}
 
