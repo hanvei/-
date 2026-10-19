@@ -77,6 +77,7 @@ public class Hack {
 	 */
 	public interface Mirror<T> {}
 	@Retention(RetentionPolicy.RUNTIME) public @interface SourceClass { String value(); }
+	@Retention(RetentionPolicy.RUNTIME) public @interface Fallback { int value(); }
 
 	public interface HackedObject {
 		<T, M extends Mirror<T>> M with(final Class<M> mirror_class);
