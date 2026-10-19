@@ -18,7 +18,7 @@ jobs:
         with:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
-      - run: sdkmanager 'platforms;android-30' 'platforms;android-27' 'build-tools;30.0.3'
+      - run: sdkmanager 'platforms;android-31' 'platforms;android-27' 'build-tools;30.0.3'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
