@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '8'
+          java-version: '17'
       - name: Build APK
         working-directory: island
         run: bash gradlew :assembly:assembleCompleteDebug --stacktrace --no-daemon
@@ -31,4 +31,5 @@ jobs:
           name: android-space-demo-debug
           path: island/assembly/build/outputs/apk/complete/debug/*.apk
           if-no-files-found: error
+
 
