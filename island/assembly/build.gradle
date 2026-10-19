@@ -16,7 +16,7 @@ android {
 
     buildTypes {
         debug {
-            firebaseCrashlytics.mappingFileUploadEnabled false
+            
         }
         release {
             minifyEnabled true
@@ -80,5 +80,7 @@ dependencies {
     // File Provider only
     fileproviderImplementation project(':fileprovider')
 }
+
+
 
 
