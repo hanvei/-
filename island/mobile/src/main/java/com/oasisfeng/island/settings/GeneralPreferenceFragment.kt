@@ -23,7 +23,7 @@ import com.oasisfeng.island.util.DPM
 import com.oasisfeng.island.util.DevicePolicies
 import com.oasisfeng.island.util.Modules
 import com.oasisfeng.island.util.Permissions
-import eu.chainfire.libsuperuser.Shell
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ class GeneralPreferenceFragment: SettingsActivity.SubPreferenceFragment(R.xml.pr
                 if (! enabled || refreshActivationStateForPreserveAppOps()) return@also
                 CoroutineScope(Dispatchers.Main).launch {
                     val cmd = "pm grant " + Modules.MODULE_ENGINE + " " + GET_APP_OPS_STATS
-                    launch(Dispatchers.IO) { Shell.SU.run(cmd) }.join()
+                    // No root attempt; show the existing manual ADB instruction below.
 
                     if (refreshActivationStateForPreserveAppOps()) return@launch
                     Dialogs.buildAlert(activity, null, getString(R.string.prompt_adb_app_ops_command) + "\n\n" + cmd)
@@ -82,3 +82,4 @@ class GeneralPreferenceFragment: SettingsActivity.SubPreferenceFragment(R.xml.pr
         return Permissions.has(activity ?: return false, GET_APP_OPS_STATS).also { if (it) lock(true) }
     }
 }
+

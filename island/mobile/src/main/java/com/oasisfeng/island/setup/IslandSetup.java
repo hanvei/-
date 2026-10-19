@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import eu.chainfire.libsuperuser.Shell;
+
 
 import static com.oasisfeng.island.analytics.Analytics.Param.CONTENT;
 import static java.util.Objects.requireNonNull;
@@ -59,66 +59,12 @@ public class IslandSetup {
 	private static final String PACKAGE_VERIFIER_INCLUDE_ADB = "verifier_verify_adb_installs";
 
 	public static void requestProfileOwnerSetupWithRoot(final Activity activity) {
-		final ProgressDialog progress = ProgressDialog.show(activity, null, "Setup Island...", true);
-		// Phase 1: Create profile		TODO: Skip profile creation or remove existent profile first, if profile is already present (probably left by unsuccessful setup)
-		final List<String> commands = Arrays.asList("setprop fw.max_users 10",
-				"pm create-user --profileOf " + Users.toId(Process.myUserHandle()) + " --managed Island", "echo END");
-		SafeAsyncTask.execute(activity, context -> Shell.SU.run(commands), (context, result) -> {
-			final List<UserInfo> profiles = Hack.into(requireNonNull(context.getSystemService(Context.USER_SERVICE)))
-					.with(UserManagerHack.class).getProfiles(Users.toId(Users.current()));
-			final Optional<UserHandle> profile_pending_setup = profiles.stream().map(UserInfo::getUserHandle)
-					.filter(profile -> ! profile.equals(Users.current()) && isProfileWithoutOwner(context, profile)).findFirst();	// Not yet set up as profile owner
-			if (! profile_pending_setup.isPresent()) {		// Profile creation failed
-				if (result == null || result.isEmpty()) return;		// Just root failure
-				Analytics.$().event("setup_island_root_failed").withRaw("commands", commands.stream().collect(joining("\n")))
-						.withRaw("fw_max_users", String.valueOf(getSysPropMaxUsers()))
-						.withRaw("config_multiuserMaximumUsers", String.valueOf(getResConfigMaxUsers()))
-						.with(CONTENT, result.stream().collect(joining("\n"))).send();
-				dismissProgressAndShowError(context, progress, 1);
-				return;
-			}
+        android.widget.Toast.makeText(activity, "此演示版不使用 Root，请使用系统工作资料设置。", android.widget.Toast.LENGTH_LONG).show();
+    }
 
-			installIslandInProfileWithRoot(context, progress, profile_pending_setup.get());
-		});
-	}
-
-	private static boolean isProfileWithoutOwner(final Context context, final UserHandle profile) {
+    private static boolean isProfileWithoutOwner(final Context context, final UserHandle profile) {
 		final Optional<ComponentName> owner = DevicePolicies.getProfileOwnerAsUser(context, profile);
 		return owner == null || ! owner.isPresent();
-	}
-
-	// Phase 2: Install Island app inside
-	private static void installIslandInProfileWithRoot(final Activity activity, final ProgressDialog progress, final UserHandle profile) {
-		// Disable package verifier before installation, to avoid hanging too long.
-		final StringBuilder commands = new StringBuilder();
-		final String adb_verify_value_before = Settings.Global.getString(activity.getContentResolver(), PACKAGE_VERIFIER_INCLUDE_ADB);
-		if (adb_verify_value_before == null || Integer.parseInt(adb_verify_value_before) != 0)
-			commands.append("settings put global ").append(PACKAGE_VERIFIER_INCLUDE_ADB).append(" 0 ; ");
-
-		final ApplicationInfo info; try {
-			info = activity.getPackageManager().getApplicationInfo(Modules.MODULE_ENGINE, 0);
-		} catch (final NameNotFoundException e) { return; }	// Should never happen.
-		final int profile_id = Users.toId(profile);
-		commands.append("pm install -r --user ").append(profile_id).append(' ');
-		if (BuildConfig.DEBUG) commands.append("-t ");
-		commands.append(info.sourceDir).append(" && ");
-
-		if (adb_verify_value_before == null) commands.append("settings delete global ").append(PACKAGE_VERIFIER_INCLUDE_ADB).append(" ; ");
-		else commands.append("settings put global ").append(PACKAGE_VERIFIER_INCLUDE_ADB).append(' ').append(adb_verify_value_before).append(" ; ");
-
-		// All following commands must be executed all together with the above one, since this app process will be killed upon "pm install".
-		final String flat_admin_component = DeviceAdmins.getComponentName(activity).flattenToString();
-		commands.append("dpm set-profile-owner --user ").append(profile_id).append(" ").append(flat_admin_component);
-		commands.append(" && am start-user ").append(profile_id);
-
-		SafeAsyncTask.execute(activity, context -> Shell.SU.run(commands.toString()), (context, result) -> {
-			final LauncherApps launcher_apps = requireNonNull((LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE));
-			if (launcher_apps.getActivityList(context.getPackageName(), profile).isEmpty()) {
-				Analytics.$().event("setup_island_root_failed").withRaw("command", commands.toString())
-						.with(CONTENT, result == null ? "<null>" : result.stream().collect(joining("\n"))).send();
-				dismissProgressAndShowError(context, progress, 2);
-			}
-		});
 	}
 
 	private static void dismissProgressAndShowError(final Activity activity, final ProgressDialog progress, final int stage) {
@@ -213,3 +159,4 @@ public class IslandSetup {
 		}
 	}
 }
+

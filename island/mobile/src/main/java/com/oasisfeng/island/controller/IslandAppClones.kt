@@ -39,7 +39,7 @@ import com.oasisfeng.island.util.DevicePolicies
 import com.oasisfeng.island.util.OwnerUser
 import com.oasisfeng.island.util.ProfileUser
 import com.oasisfeng.island.util.Users
-import eu.chainfire.libsuperuser.Shell
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutionException
@@ -101,25 +101,10 @@ object IslandAppClones {
 					analytics().event("clone_via_market").with(Analytics.Param.ITEM_ID, pkg).with(Analytics.Param.ITEM_CATEGORY, info.packageName).send() }}
 	}
 
-	@OwnerUser @RequiresApi(O) private suspend fun cloneAppViaRoot(context: Context, source: IslandAppInfo, profile: UserHandle): Boolean {
-		val pkg = source.packageName
-		val cmd = "cmd package install-existing --user " + Users.toId(profile) + " " + pkg // Try root approach first
-		val result = withContext(Dispatchers.Default) { Shell.SU.run(cmd) }
-		try {
-			val app = context.getSystemService(LauncherApps::class.java)!!.getApplicationInfo(pkg, 0, profile)
-			if (app != null && app.installed) {
-				Toast.makeText(context, context.getString(R.string.toast_successfully_cloned, source.label), Toast.LENGTH_SHORT).show()
-				return true
-			}
-		} catch (e: PackageManager.NameNotFoundException) {
-			Log.i(TAG, "Cannot clone app via root: $pkg")
-			if (result != null && result.isNotEmpty()) analytics().logAndReport(TAG, "Error executing: $cmd",
-					ExecutionException("ROOT: " + cmd + ", result: " + java.lang.String.join(" \\n ", result), null))
-		}
-		return false
-	}
+	// Root is intentionally unsupported in this demo; use the existing non-root fallback.
+    @OwnerUser @RequiresApi(O) private suspend fun cloneAppViaRoot(context: Context, source: IslandAppInfo, profile: UserHandle): Boolean = false
 
-	@JvmStatic @ProfileUser private fun performAppCloningInProfile(context: Context, appInfo: ApplicationInfo): Int {
+    @JvmStatic @ProfileUser private fun performAppCloningInProfile(context: Context, appInfo: ApplicationInfo): Int {
 		val pkg = appInfo.packageName; val policies = DevicePolicies(context)
 		policies.clearUserRestrictionsIfNeeded(context, UserManager.DISALLOW_INSTALL_APPS)  // Blindly clear these restrictions
 
