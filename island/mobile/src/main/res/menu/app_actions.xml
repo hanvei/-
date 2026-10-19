@@ -9,6 +9,7 @@
     <item android:id="@+id/menu_app_settings" android:showAsAction="ifRoom" android:title="@string/action_app_settings" android:icon="@drawable/ic_settings_applications_white_24dp" />
 
     <item android:id="@+id/menu_greenify"     android:title="@string/action_greenify" android:showAsAction="never" />
+    <item android:id="@+id/menu_auto_freeze" android:title="@string/action_auto_freeze" android:checkable="true" android:showAsAction="never" />
     <item android:id="@+id/menu_shortcut"     android:title="@string/action_shortcut" android:showAsAction="never" />
     <item android:id="@+id/menu_remove"       android:title="@string/action_remove" android:showAsAction="never" />
     <item android:id="@+id/menu_uninstall"    android:title="@string/action_uninstall" android:showAsAction="never" />

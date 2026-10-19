@@ -35,6 +35,7 @@ import com.oasisfeng.android.content.pm.LauncherAppsCompat
 import com.oasisfeng.android.os.UserHandles
 import com.oasisfeng.android.util.Apps
 import com.oasisfeng.island.analytics.analytics
+import com.oasisfeng.island.controller.IslandAppControl
 import com.oasisfeng.island.data.IslandAppInfo
 import com.oasisfeng.island.data.helper.hidden
 import com.oasisfeng.island.engine.IslandManager
@@ -191,6 +192,7 @@ object IslandAppShortcut {
 		companion object {
 
 			@OwnerUser private fun prepareAndLaunch(context: Context, pkg: String, intent: Intent? = null, profile: UserHandle = Users.current()) {
+				IslandAppControl.scheduleAutoFreeze(context, pkg, profile)
 				val app = LauncherAppsCompat(context).getApplicationInfoNoThrows(pkg, MATCH_UNINSTALLED_PACKAGES, profile)
 						?: return Toast.makeText(context, context.getString(R.string.toast_app_launch_failure, Apps.of(context).getAppName(pkg)), LENGTH_LONG).show()
 				Shuttle(context, to = profile).launch {

@@ -231,6 +231,8 @@ public class AppListViewModel extends BaseAppListViewModel<AppViewModel> {
 		menu.findItem(R.id.menu_uninstall).setVisible(installed && exclusive && ! system);	// "Uninstall" for exclusive user app, "Remove" for exclusive system app.
 		menu.findItem(R.id.menu_shortcut).setVisible(installed && is_managed && app.isLaunchable() && app.enabled);
 		menu.findItem(R.id.menu_greenify).setVisible(installed && is_managed && app.enabled);
+		menu.findItem(R.id.menu_auto_freeze).setVisible(installed && is_managed && ! in_owner && ! app.isHidden() && app.enabled)
+				.setCheckable(true).setChecked(IslandAppControl.isAutoFreezeEnabled(app.context(), app));
 
 		if (BuildConfig.DEBUG) menu.findItem(R.id.menu_suspend).setVisible(! placeholder).setTitle(app.isSuspended() ? "Unsuspend" : "Suspend");
 	}
@@ -294,6 +296,10 @@ public class AppListViewModel extends BaseAppListViewModel<AppViewModel> {
 			onShortcutRequested(context);
 		} else if (id == R.id.menu_greenify) {
 			onGreenifyRequested(context);
+		} else if (id == R.id.menu_auto_freeze) {
+			final boolean enabled = IslandAppControl.toggleAutoFreeze(context, app);
+			Toast.makeText(context, enabled ? R.string.toast_auto_freeze_enabled : R.string.toast_auto_freeze_disabled, Toast.LENGTH_SHORT).show();
+			clearSelection();
 		} else if (id == R.id.menu_suspend) {
 			final boolean done = IslandAppControl.setSuspended(app, ! app.isSuspended());
 			Toast.makeText(context, done ? "Done" : "Failed", Toast.LENGTH_SHORT).show();

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.LauncherApps
 import android.net.Uri
 import android.os.UserHandle
+import android.preference.PreferenceManager
 import android.widget.Toast
 import com.oasisfeng.android.app.Activities
 import com.oasisfeng.android.content.IntentCompat
@@ -53,11 +54,37 @@ object IslandAppControl {
 
 	@JvmStatic fun launch(context: Context, app: IslandAppInfo) {
 		analytics().event("action_launch").with(ITEM_ID, app.packageName).send()
+		scheduleAutoFreeze(context, app.packageName, app.user)
 
 		if (app.isHidden) unfreezeAndLaunch(context, app)
 		else if (! IslandManager.launchApp(context, app.packageName, app.user))      // Not frozen, launch the app directly. TODO: If isBlocked() ?
 			Toast.makeText(context, context.getString(R.string.toast_app_launch_failure, app.label), Toast.LENGTH_SHORT).show()
 	}
+
+	@JvmStatic fun isAutoFreezeEnabled(context: Context, app: IslandAppInfo) =
+		isAutoFreezeEnabled(context, app.packageName, app.user)
+
+	@JvmStatic fun isAutoFreezeEnabled(context: Context, packageName: String, profile: UserHandle): Boolean =
+		PreferenceManager.getDefaultSharedPreferences(context).getStringSet(AUTO_FREEZE_PACKAGES, emptySet())
+			?.contains(autoFreezeKey(packageName, profile)) == true
+
+	@JvmStatic fun toggleAutoFreeze(context: Context, app: IslandAppInfo): Boolean {
+		val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+		val packages = (prefs.getStringSet(AUTO_FREEZE_PACKAGES, emptySet()) ?: emptySet()).toMutableSet()
+		val key = autoFreezeKey(app.packageName, app.user)
+		val enabled = if (packages.add(key)) true else { packages.remove(key); false }
+		prefs.edit().putStringSet(AUTO_FREEZE_PACKAGES, packages).apply()
+		return enabled
+	}
+
+	@JvmStatic fun scheduleAutoFreeze(context: Context, packageName: String, profile: UserHandle) {
+		if (! isAutoFreezeEnabled(context, packageName, profile)) return
+		if (Users.current() == profile) AutoFreezeService.start(context, packageName)
+		else Shuttle(context, to = profile).invoke(with = packageName) { AutoFreezeService.start(this, it) }
+	}
+
+	private fun autoFreezeKey(packageName: String, profile: UserHandle) = "${profile.hashCode()}:$packageName"
+	private const val AUTO_FREEZE_PACKAGES = "auto_freeze_packages"
 
 	private fun unfreezeAndLaunch(context: Context, app: IslandAppInfo) {
 		val pkg = app.packageName

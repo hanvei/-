@@ -64,6 +64,12 @@
     <string name="action_unfreeze">解除冻结</string>
     <string name="action_shortcut">创建“解冻并启动”快捷方式</string>
     <string name="action_greenify">委托“绿色守护”自动冻结</string>
+    <string name="action_auto_freeze">熄屏时自动冻结</string>
+    <string name="auto_freeze_channel">自动冻结应用</string>
+    <string name="auto_freeze_notification_title">自动冻结已启动</string>
+    <string name="auto_freeze_notification_text">选中的应用将在熄屏时冻结</string>
+    <string name="toast_auto_freeze_enabled">此应用将在熄屏时自动冻结</string>
+    <string name="toast_auto_freeze_disabled">此应用已关闭自动冻结</string>
     <string name="action_app_settings">应用设置</string>
     <string name="action_remove">移除分身</string>
     <string name="action_uninstall">卸载</string>

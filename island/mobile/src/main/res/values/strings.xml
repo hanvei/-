@@ -68,6 +68,12 @@ the sandbox environment. Island never collect data related to your privacy, plea
     <string name="action_unfreeze">Unfreeze</string>
     <string name="action_shortcut">Create Unfreeze &amp; Launch shortcut</string>
     <string name="action_greenify">Auto-freeze with Greenify</string>
+    <string name="action_auto_freeze">Auto-freeze when screen turns off</string>
+    <string name="auto_freeze_channel">Automatic app freeze</string>
+    <string name="auto_freeze_notification_title">Automatic freeze is armed</string>
+    <string name="auto_freeze_notification_text">Selected apps will freeze when the screen turns off</string>
+    <string name="toast_auto_freeze_enabled">This app will freeze when the screen turns off</string>
+    <string name="toast_auto_freeze_disabled">Automatic freeze is off for this app</string>
     <string name="action_app_settings">App settings</string>
     <string name="action_remove">Remove</string>
     <string name="action_uninstall">Uninstall</string>
