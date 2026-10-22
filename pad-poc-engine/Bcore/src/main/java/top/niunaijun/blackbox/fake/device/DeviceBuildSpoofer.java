@@ -25,6 +25,13 @@ public final class DeviceBuildSpoofer {
         setStaticStringField("PRODUCT", profile.product);
         setStaticStringField("FINGERPRINT", profile.fingerprint);
         setStaticStringField("SERIAL", profile.serial);
+        // MatePad 11 (DBY-W09) uses Qualcomm hardware. Keep the Build view coherent
+        // with the model profile instead of leaking the host phone's board values.
+        setStaticStringField("HARDWARE", "qcom");
+        setStaticStringField("BOARD", "kona");
+        setStaticStringField("DISPLAY", "DBY-W09 102.0.0.225(C00E220R1P1)");
+        setStaticStringField("TYPE", "user");
+        setStaticStringField("TAGS", "release-keys");
     }
 
     private static void setStaticStringField(String fieldName, String value) {

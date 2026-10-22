@@ -50,24 +50,35 @@ void setDeviceSpoofValues(
 }
 
 
+static bool property_is(const char *name, const char *a, const char *b = nullptr,
+                        const char *c = nullptr, const char *d = nullptr) {
+    return strcmp(name, a) == 0 || (b && strcmp(name, b) == 0)
+           || (c && strcmp(name, c) == 0) || (d && strcmp(name, d) == 0);
+}
+
 int my_system_property_get(const char *name, char *value) {
     std::lock_guard<std::mutex> lock(g_spoof_mutex);
-    if (strcmp(name, "ro.product.model") == 0) {
+    if (property_is(name, "ro.product.model", "ro.product.system.model",
+                    "ro.product.vendor.model", "ro.product.odm.model")) {
         return copy_spoofed_value(g_model, value);
     }
     if (strcmp(name, "ro.build.characteristics") == 0) {
         return copy_spoofed_value(g_characteristics, value);
     }
-    if (strcmp(name, "ro.product.brand") == 0) {
+    if (property_is(name, "ro.product.brand", "ro.product.system.brand",
+                    "ro.product.vendor.brand", "ro.product.odm.brand")) {
         return copy_spoofed_value(g_brand, value);
     }
-    if (strcmp(name, "ro.product.manufacturer") == 0) {
+    if (property_is(name, "ro.product.manufacturer", "ro.product.system.manufacturer",
+                    "ro.product.vendor.manufacturer", "ro.product.odm.manufacturer")) {
         return copy_spoofed_value(g_manufacturer, value);
     }
-    if (strcmp(name, "ro.product.device") == 0) {
+    if (property_is(name, "ro.product.device", "ro.product.system.device",
+                    "ro.product.vendor.device", "ro.product.odm.device")) {
         return copy_spoofed_value(g_device, value);
     }
-    if (strcmp(name, "ro.product.name") == 0) {
+    if (property_is(name, "ro.product.name", "ro.product.system.name",
+                    "ro.product.vendor.name", "ro.product.odm.name")) {
         return copy_spoofed_value(g_product, value);
     }
     if (strcmp(name, "ro.build.fingerprint") == 0) {
@@ -75,6 +86,18 @@ int my_system_property_get(const char *name, char *value) {
     }
     if (strcmp(name, "ro.serialno") == 0) {
         return copy_spoofed_value(g_serial, value);
+    }
+    if (strcmp(name, "ro.hardware") == 0) {
+        return copy_spoofed_value("qcom", value);
+    }
+    if (strcmp(name, "ro.product.board") == 0) {
+        return copy_spoofed_value("kona", value);
+    }
+    if (strcmp(name, "ro.build.type") == 0) {
+        return copy_spoofed_value("user", value);
+    }
+    if (strcmp(name, "ro.build.tags") == 0) {
+        return copy_spoofed_value("release-keys", value);
     }
     if (orig_system_property_get) {
         return orig_system_property_get(name, value);

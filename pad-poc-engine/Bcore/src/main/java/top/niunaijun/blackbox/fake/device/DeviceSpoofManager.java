@@ -53,12 +53,12 @@ public final class DeviceSpoofManager {
         return new DeviceSpoofProfile(
                 "HUAWEI",
                 "HUAWEI",
-                "HUAWEI Mate X6",
-                "huaweimatex6",
-                "huaweimatex6",
-                "HUAWEI/huaweimatex6/huaweimatex6:12/SP1A.210812.015/7679548:user/release-keys",
-                "PADTEST123456",
-                stableAndroidId("bbb_default_" + userId)
+                "DBY-W09",
+                "HWDBY",
+                "DBY-W09",
+                "HUAWEI/DBY-W09/HWDBY:10/HUAWEIDBY-W09/102.0.0.225C00:user/release-keys",
+                "DBYW09PADTEST",
+                stableAndroidId("huawei_matepad_11_dby_w09_" + userId)
         );
     }
 
