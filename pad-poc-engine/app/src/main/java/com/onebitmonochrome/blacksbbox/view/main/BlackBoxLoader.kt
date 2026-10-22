@@ -153,6 +153,10 @@ class BlackBoxLoader {
                                         userId: Int
                                 ) {
                                     try {
+                                        // The package context is normalized again while LoadedApk creates
+                                        // the guest Application. Re-apply the tablet configuration to the
+                                        // actual guest Application immediately before its onCreate().
+                                        VirtualTabletDisplay.apply(application)
                                         Log.d(
                                                 TAG,
                                                 "beforeApplicationOnCreate: pkg $packageName, processName $processName"

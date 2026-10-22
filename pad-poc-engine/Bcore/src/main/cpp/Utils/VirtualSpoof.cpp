@@ -13,6 +13,11 @@
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 static int (*orig_system_property_get)(const char *name, char *value) = nullptr;
+typedef void (*property_read_callback)(void *cookie, const char *name,
+                                      const char *value, uint32_t serial);
+static void (*orig_system_property_read_callback)(const prop_info *pi,
+                                                  property_read_callback callback,
+                                                  void *cookie) = nullptr;
 static std::mutex g_spoof_mutex;
 static std::string g_manufacturer = "Google";
 static std::string g_brand = "google";
@@ -106,6 +111,52 @@ int my_system_property_get(const char *name, char *value) {
     return 0;
 }
 
+static bool get_spoofed_property(const char *name, std::string &result) {
+    if (property_is(name, "ro.product.model", "ro.product.system.model",
+                    "ro.product.vendor.model", "ro.product.odm.model")) result = g_model;
+    else if (strcmp(name, "ro.build.characteristics") == 0) result = g_characteristics;
+    else if (property_is(name, "ro.product.brand", "ro.product.system.brand",
+                         "ro.product.vendor.brand", "ro.product.odm.brand")) result = g_brand;
+    else if (property_is(name, "ro.product.manufacturer", "ro.product.system.manufacturer",
+                         "ro.product.vendor.manufacturer", "ro.product.odm.manufacturer")) result = g_manufacturer;
+    else if (property_is(name, "ro.product.device", "ro.product.system.device",
+                         "ro.product.vendor.device", "ro.product.odm.device")) result = g_device;
+    else if (property_is(name, "ro.product.name", "ro.product.system.name",
+                         "ro.product.vendor.name", "ro.product.odm.name")) result = g_product;
+    else if (strcmp(name, "ro.build.fingerprint") == 0) result = g_fingerprint;
+    else if (strcmp(name, "ro.serialno") == 0) result = g_serial;
+    else if (strcmp(name, "ro.hardware") == 0) result = "qcom";
+    else if (strcmp(name, "ro.product.board") == 0) result = "kona";
+    else if (strcmp(name, "ro.build.type") == 0) result = "user";
+    else if (strcmp(name, "ro.build.tags") == 0) result = "release-keys";
+    else return false;
+    return true;
+}
+
+struct ReadCallbackContext {
+    property_read_callback callback;
+    void *cookie;
+};
+
+static void spoofing_read_callback(void *opaque, const char *name,
+                                   const char *value, uint32_t serial) {
+    ReadCallbackContext *context = static_cast<ReadCallbackContext *>(opaque);
+    std::string replacement;
+    {
+        std::lock_guard<std::mutex> lock(g_spoof_mutex);
+        if (get_spoofed_property(name, replacement)) value = replacement.c_str();
+    }
+    context->callback(context->cookie, name, value, serial);
+}
+
+void my_system_property_read_callback(const prop_info *pi,
+                                      property_read_callback callback,
+                                      void *cookie) {
+    if (!orig_system_property_read_callback || !callback) return;
+    ReadCallbackContext context = { callback, cookie };
+    orig_system_property_read_callback(pi, spoofing_read_callback, &context);
+}
+
 void install_property_get_hook() {
     void* handle = xdl_open("libc.so", XDL_DEFAULT);
     void* target = xdl_dsym(handle, "__system_property_get", nullptr);
@@ -119,6 +170,16 @@ void install_property_get_hook() {
     } else{
         xdl_close(handle);
     }
+
+    handle = xdl_open("libc.so", XDL_DEFAULT);
+    target = xdl_dsym(handle, "__system_property_read_callback", nullptr);
+    if (target && DobbyHook(target, (void*)my_system_property_read_callback,
+                            (void**)&orig_system_property_read_callback) == 0) {
+        LOGD("__system_property_read_callback hook installed successfully");
+    } else {
+        LOGD("__system_property_read_callback hook failed");
+    }
+    if (handle) xdl_close(handle);
 
 }
 
