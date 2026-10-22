@@ -160,6 +160,19 @@ public class IPackageManagerProxy extends BinderInvocationStub {
         addMethodHook(new XiaomiSecurityBypass());
     }
 
+    @ProxyMethod("hasSystemFeature")
+    public static class HasSystemFeature extends MethodHook {
+        @Override
+        protected Object hook(Object who, Method method, Object[] args) throws Throwable {
+            // Proof-of-concept: expose Huawei tablet capability only to virtual apps.
+            if (args != null && args.length > 0
+                    && "com.huawei.software.features.pad".equals(args[0])) {
+                return true;
+            }
+            return method.invoke(who, args);
+        }
+    }
+
     @ProxyMethod("resolveIntent")
     public static class ResolveIntent extends MethodHook {
         @Override
