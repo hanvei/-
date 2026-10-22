@@ -9,6 +9,7 @@ import top.niunaijun.blackbox.app.BActivityThread
 import top.niunaijun.blackbox.app.configuration.AppLifecycleCallback
 import top.niunaijun.blackbox.app.configuration.ClientConfiguration
 import top.niunaijun.blackbox.fake.device.DeviceSpoofManager
+import top.niunaijun.blackbox.fake.device.VirtualTabletDisplay
 import com.onebitmonochrome.blacksbbox.app.App
 import com.onebitmonochrome.blacksbbox.app.AppFreezeButtonManager
 import com.onebitmonochrome.blacksbbox.app.AppFreezeManager
@@ -135,6 +136,7 @@ class BlackBoxLoader {
                                 ) {
                                     try {
                                         DeviceSpoofManager.applyToCurrentProcess(userId)
+                                        VirtualTabletDisplay.apply(context)
                                         Log.d(
                                                 TAG,
                                                 "beforeCreateApplication: pkg $packageName, processName $processName,userID:${BActivityThread.getUserId()}"

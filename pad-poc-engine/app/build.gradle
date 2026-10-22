@@ -9,7 +9,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
     ndkVersion = "29.0.13846066"
     defaultConfig {
-        applicationId "com.onebitmonochrome.blacksbbox.padpoc2"
+        applicationId "com.onebitmonochrome.blacksbbox.padpoc3"
         minSdk rootProject.ext.minSdk
         targetSdk rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
@@ -28,7 +28,21 @@ android {
         }
     }
 
+    signingConfigs {
+        padPoc {
+            storeFile file('padpoc-signing.jks')
+            storePassword System.getenv('PAD_POC_STORE_PASSWORD') ?: ''
+            keyAlias 'padpoc'
+            keyPassword System.getenv('PAD_POC_KEY_PASSWORD') ?: ''
+        }
+    }
+
     buildTypes {
+        debug {
+            if (System.getenv('PAD_POC_STORE_PASSWORD')) {
+                signingConfig signingConfigs.padPoc
+            }
+        }
         release {
             signingConfig signingConfigs.debug
             minifyEnabled true

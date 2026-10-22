@@ -24,8 +24,15 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - name: Install Android SDK and NDK
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;29.0.13846066'
+      - name: Load persistent test signing key
+        env:
+          PAD_POC_KEYSTORE_B64: ${{ secrets.PAD_POC_KEYSTORE_B64 }}
+        run: printf '%s' "$PAD_POC_KEYSTORE_B64" | base64 -d > pad-poc-engine/app/padpoc-signing.jks
       - name: Build PAD environment
         working-directory: pad-poc-engine
+        env:
+          PAD_POC_STORE_PASSWORD: ${{ secrets.PAD_POC_STORE_PASSWORD }}
+          PAD_POC_KEY_PASSWORD: ${{ secrets.PAD_POC_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug --no-daemon --stacktrace
