@@ -30,6 +30,7 @@ import top.niunaijun.blackbox.BlackBoxCore;
 import top.niunaijun.blackbox.app.BActivityThread;
 import top.niunaijun.blackbox.fake.hook.HookManager;
 import top.niunaijun.blackbox.fake.hook.IInjectHook;
+import top.niunaijun.blackbox.fake.device.VirtualTabletDisplay;
 import top.niunaijun.blackbox.fake.service.HCallbackProxy;
 import top.niunaijun.blackbox.fake.service.IActivityClientProxy;
 import top.niunaijun.blackbox.fake.view.SafeResources;
@@ -124,6 +125,7 @@ public final class AppInstrumentation extends BaseInstrumentationDelegate implem
         ContextCompat.fix(activity);
         forceActivityContextPackage(activity);
         ensureActivityResourceContext(activity);
+        VirtualTabletDisplay.apply(activity);
         ActivityCompat.fix(activity);
         if (info.theme != 0) {
             activity.getTheme().applyStyle(info.theme, true);
