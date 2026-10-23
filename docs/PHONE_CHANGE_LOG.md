@@ -80,3 +80,15 @@
 - 判断：参数模拟路线已使微信自身的平板资格检查通过。未修改微信内部 `checkLoginAsPad()`，未强制返回 true；结果来自壶内统一设备参数后微信展示的原生流程。
 - 数据/网络：未清除数据；未操作系统微信或手机其他应用资料；未修改网络。
 - 当前手机状态：停留在测试微信的 PAD 使用方式选择页；不再继续操作。
+
+### 2026-10-23 16:13–16:17 — 覆盖安装身份一致性修正版并验证 PAD 登录入口
+- 设备：`PQY0220B11031530`（NOH-AN00 / HWNOH）。ADB 同时发现局域网电视，但所有命令均使用 `-s PQY0220B11031530`，未操作电视。
+- APK：提交 `849ba8c` 的 `BlackBox_4.7.1_arm64-v8a-debug.apk`；SHA-256 `AA4C4EBB21BAED7408BA94F30264466A08A40CFF9577ABEC91FD4909E8D63275`。
+- 安装：执行 `adb install --no-streaming -r` 覆盖安装 `com.onebitmonochrome.blacksbbox.padpoc3`，结果 `Success`。`firstInstallTime` 保持 `2026-10-23 00:58:11`，`lastUpdateTime` 更新为 `2026-10-23 16:13:51`；未清除应用数据。
+- 数据保留证据：升级后壶主页仍显示既有 `PAD Probe` 和壶内测试微信；未导入、启动或修改手机系统微信。
+- PAD Probe 实测：`MODEL=WGR-W09`、`BRAND/MANUFACTURER=HUAWEI`、`ro.build.characteristics=tablet`、`ro.product.model=WGR-W09`、Huawei PAD feature=true、`screenWidthDp=800`。
+- 运行日志：`__system_property_get` 与 `__system_property_read_callback` 钩子成功，随后应用统一配置 `HUAWEI WGR-W09`；未见相关 FATAL EXCEPTION。
+- 微信验证：仅启动壶内测试微信。登录入口显示“仅在平板上使用”；点击后进入微信原生“用手机微信扫码登录”二维码页面。未扫码、未输入账号、未执行登录。
+- 临时取证：在 `/sdcard/` 创建 `padpoc3_after_849ba8c.png`、`padpoc3_ui_849ba8c.xml`、`padprobe_849ba8c.xml`、`wxpad_849ba8c.xml`、`wxpad_qr_849ba8c.xml`，读取/拉取后均已删除手机端临时文件。本地保留 `padpoc3_after_849ba8c.png`。
+- 网络：未修改代理、VPN、Wi-Fi、USB 网络共享或其他网络设置。
+- 手机系统：未修改分辨率、DPI、开发者选项或系统属性；未清除任何应用数据；未操作手机其他资料。
