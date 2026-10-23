@@ -21,17 +21,17 @@ public final class VirtualTabletDisplay {
         metrics.setTo(resources.getDisplayMetrics());
 
         // Report a tablet-sized resource configuration inside the virtual process only.
-        // HUAWEI MatePad 11: 2560 x 1600, about 275 ppi. Android uses the
-        // nearest stable logical density bucket, producing a genuine tablet sw.
-        configuration.screenWidthDp = 914;
-        configuration.screenHeightDp = 1463;
-        configuration.smallestScreenWidthDp = 914;
-        configuration.densityDpi = 280;
+        // Values captured read-only from the reference MatePad Pro WGR-W09.
+        // The guest is presented in portrait: 1600 x 2560 at 320 dpi => 800 x 1280 dp.
+        configuration.screenWidthDp = 800;
+        configuration.screenHeightDp = 1280;
+        configuration.smallestScreenWidthDp = 800;
+        configuration.densityDpi = 320;
         metrics.widthPixels = 1600;
         metrics.heightPixels = 2560;
-        metrics.densityDpi = 280;
-        metrics.density = 1.75f;
-        metrics.scaledDensity = 1.75f;
+        metrics.densityDpi = 320;
+        metrics.density = 2.0f;
+        metrics.scaledDensity = 2.0f;
 
         resources.updateConfiguration(configuration, metrics);
     }

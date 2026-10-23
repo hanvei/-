@@ -164,10 +164,18 @@ public class IPackageManagerProxy extends BinderInvocationStub {
     public static class HasSystemFeature extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            // Proof-of-concept: expose Huawei tablet capability only to virtual apps.
-            if (args != null && args.length > 0
-                    && "com.huawei.software.features.pad".equals(args[0])) {
-                return true;
+            // Public features captured from the reference MatePad Pro WGR-W09.
+            // These are exposed only inside guest processes.
+            if (args != null && args.length > 0 && args[0] instanceof String) {
+                String feature = (String) args[0];
+                if ("com.huawei.software.features.pad".equals(feature)
+                        || "com.huawei.software.features.china".equals(feature)
+                        || "com.huawei.software.features.full".equals(feature)
+                        || "com.huawei.software.features.huawei".equals(feature)
+                        || "com.huawei.system.feature".equals(feature)
+                        || "huawei.android.hardware.stylus".equals(feature)) {
+                    return true;
+                }
             }
             return method.invoke(who, args);
         }

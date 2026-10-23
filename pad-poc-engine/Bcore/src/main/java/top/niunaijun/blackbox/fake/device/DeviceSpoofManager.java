@@ -53,12 +53,12 @@ public final class DeviceSpoofManager {
         return new DeviceSpoofProfile(
                 "HUAWEI",
                 "HUAWEI",
-                "DBY-W09",
-                "HWDBY",
-                "DBY-W09",
-                "HUAWEI/DBY-W09/HWDBY:10/HUAWEIDBY-W09/102.0.0.225C00:user/release-keys",
-                "DBYW09PADTEST",
-                stableAndroidId("huawei_matepad_11_dby_w09_" + userId)
+                "WGR-W09",
+                "HWWGR",
+                "WGR-W09",
+                "HUAWEI/WGR-W09/HWWGR:12/HUAWEIWGR-W09/104.2.0.213C00:user/release-keys",
+                stableSerial("huawei_matepad_pro_wgr_w09_" + userId),
+                stableAndroidId("huawei_matepad_pro_wgr_w09_" + userId)
         );
     }
 

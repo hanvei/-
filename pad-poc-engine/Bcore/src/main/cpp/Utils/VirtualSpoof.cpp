@@ -93,16 +93,31 @@ int my_system_property_get(const char *name, char *value) {
         return copy_spoofed_value(g_serial, value);
     }
     if (strcmp(name, "ro.hardware") == 0) {
-        return copy_spoofed_value("qcom", value);
+        return copy_spoofed_value("kirin9000E", value);
     }
     if (strcmp(name, "ro.product.board") == 0) {
-        return copy_spoofed_value("kona", value);
+        return copy_spoofed_value("WGR", value);
     }
     if (strcmp(name, "ro.build.type") == 0) {
         return copy_spoofed_value("user", value);
     }
     if (strcmp(name, "ro.build.tags") == 0) {
         return copy_spoofed_value("release-keys", value);
+    }
+    if (strcmp(name, "ro.build.display.id") == 0) {
+        return copy_spoofed_value("WGR-W09 4.2.0.213(C00E100R1P9)", value);
+    }
+    if (strcmp(name, "ro.build.id") == 0) {
+        return copy_spoofed_value("HUAWEIWGR-W09", value);
+    }
+    if (strcmp(name, "ro.build.version.incremental") == 0) {
+        return copy_spoofed_value("104.2.0.213C00", value);
+    }
+    if (strcmp(name, "ro.build.version.emui") == 0) {
+        return copy_spoofed_value("EmotionUI_14.2.0", value);
+    }
+    if (strcmp(name, "ro.sf.lcd_density") == 0) {
+        return copy_spoofed_value("320", value);
     }
     if (orig_system_property_get) {
         return orig_system_property_get(name, value);
@@ -125,10 +140,15 @@ static bool get_spoofed_property(const char *name, std::string &result) {
                          "ro.product.vendor.name", "ro.product.odm.name")) result = g_product;
     else if (strcmp(name, "ro.build.fingerprint") == 0) result = g_fingerprint;
     else if (strcmp(name, "ro.serialno") == 0) result = g_serial;
-    else if (strcmp(name, "ro.hardware") == 0) result = "qcom";
-    else if (strcmp(name, "ro.product.board") == 0) result = "kona";
+    else if (strcmp(name, "ro.hardware") == 0 || strcmp(name, "ro.board.platform") == 0) result = "kirin9000E";
+    else if (strcmp(name, "ro.product.board") == 0) result = "WGR";
     else if (strcmp(name, "ro.build.type") == 0) result = "user";
     else if (strcmp(name, "ro.build.tags") == 0) result = "release-keys";
+    else if (strcmp(name, "ro.build.display.id") == 0) result = "WGR-W09 4.2.0.213(C00E100R1P9)";
+    else if (strcmp(name, "ro.build.id") == 0) result = "HUAWEIWGR-W09";
+    else if (strcmp(name, "ro.build.version.incremental") == 0) result = "104.2.0.213C00";
+    else if (strcmp(name, "ro.build.version.emui") == 0) result = "EmotionUI_14.2.0";
+    else if (strcmp(name, "ro.sf.lcd_density") == 0) result = "320";
     else return false;
     return true;
 }
