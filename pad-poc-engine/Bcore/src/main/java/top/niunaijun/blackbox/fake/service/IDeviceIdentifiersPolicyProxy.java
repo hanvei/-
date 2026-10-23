@@ -16,6 +16,7 @@ import top.niunaijun.blackbox.app.BActivityThread;
 import top.niunaijun.blackbox.fake.hook.BinderInvocationStub;
 import top.niunaijun.blackbox.fake.hook.MethodHook;
 import top.niunaijun.blackbox.fake.hook.ProxyMethod;
+import top.niunaijun.blackbox.fake.device.DeviceSpoofManager;
 import top.niunaijun.blackbox.utils.Md5Utils;
 import top.niunaijun.blackbox.utils.Slog;
 
@@ -123,12 +124,12 @@ public class IDeviceIdentifiersPolicyProxy extends BinderInvocationStub {
     }
 
     @ProxyMethod("getSerialForPackage")
-    public static class x extends MethodHook {
+    public static class GetSerialForPackage extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
 
 
-            return Md5Utils.md5(BlackBoxCore.getHostPkg());
+            return DeviceSpoofManager.getProfile(BActivityThread.getUserId()).serial;
         }
     }
 
@@ -136,7 +137,8 @@ public class IDeviceIdentifiersPolicyProxy extends BinderInvocationStub {
     public static class getImeiForSlot extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            return Md5Utils.md5(BlackBoxCore.getHostPkg());
+            // WGR-W09 is the Wi-Fi MatePad Pro reference profile and has no IMEI.
+            return null;
         }
     }
 
@@ -144,7 +146,8 @@ public class IDeviceIdentifiersPolicyProxy extends BinderInvocationStub {
     public static class getMeidForSlot extends MethodHook {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
-            return Md5Utils.md5(BlackBoxCore.getHostPkg());
+            // WGR-W09 is the Wi-Fi MatePad Pro reference profile and has no MEID.
+            return null;
         }
     }
 }

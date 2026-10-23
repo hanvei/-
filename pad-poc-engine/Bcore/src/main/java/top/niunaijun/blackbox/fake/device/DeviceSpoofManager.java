@@ -24,6 +24,8 @@ public final class DeviceSpoofManager {
     private static final String KEY_FINGERPRINT = "fingerprint_";
     private static final String KEY_SERIAL = "serial_";
     private static final String KEY_ANDROID_ID = "android_id_";
+    private static final String KEY_PROFILE_SCHEMA = "profile_schema_";
+    private static final int PROFILE_SCHEMA_WGR_W09 = 2;
 
     private DeviceSpoofManager() {
     }
@@ -37,6 +39,7 @@ public final class DeviceSpoofManager {
     public static DeviceSpoofProfile getProfile(int userId) {
         DeviceSpoofProfile defaults = getDefaultProfile(userId);
         SharedPreferences prefs = prefs();
+        migrateLegacyTabletProfileIfNeeded(prefs, userId, defaults);
         return new DeviceSpoofProfile(
                 valueOrDefault(prefs.getString(KEY_MANUFACTURER + userId, null), defaults.manufacturer),
                 valueOrDefault(prefs.getString(KEY_BRAND + userId, null), defaults.brand),
@@ -86,6 +89,7 @@ public final class DeviceSpoofManager {
                 .putString(KEY_FINGERPRINT + userId, profile.fingerprint)
                 .putString(KEY_SERIAL + userId, profile.serial)
                 .putString(KEY_ANDROID_ID + userId, profile.androidId)
+                .putInt(KEY_PROFILE_SCHEMA + userId, PROFILE_SCHEMA_WGR_W09)
                 .commit();
     }
 
@@ -99,6 +103,7 @@ public final class DeviceSpoofManager {
                 .remove(KEY_FINGERPRINT + userId)
                 .remove(KEY_SERIAL + userId)
                 .remove(KEY_ANDROID_ID + userId)
+                .putInt(KEY_PROFILE_SCHEMA + userId, PROFILE_SCHEMA_WGR_W09)
                 .commit();
     }
 
@@ -209,6 +214,34 @@ public final class DeviceSpoofManager {
 
     private static String valueOrDefault(String value, String fallback) {
         return TextUtils.isEmpty(value) ? fallback : value;
+    }
+
+    /**
+     * Upgrade profiles created by the earlier PAD experiments without clearing the
+     * virtual user. Private per-user identifiers are deliberately retained.
+     */
+    private static void migrateLegacyTabletProfileIfNeeded(
+            SharedPreferences prefs, int userId, DeviceSpoofProfile defaults) {
+        if (prefs.getInt(KEY_PROFILE_SCHEMA + userId, 0) >= PROFILE_SCHEMA_WGR_W09) {
+            return;
+        }
+        String oldManufacturer = prefs.getString(KEY_MANUFACTURER + userId, null);
+        String oldModel = prefs.getString(KEY_MODEL + userId, null);
+        boolean legacyHuaweiPad = "HUAWEI".equalsIgnoreCase(oldManufacturer)
+                && ("DBY-W09".equalsIgnoreCase(oldModel)
+                || "HUAWEI Mate X6".equalsIgnoreCase(oldModel)
+                || "Mate X6".equalsIgnoreCase(oldModel));
+
+        SharedPreferences.Editor editor = prefs.edit();
+        if (legacyHuaweiPad) {
+            editor.putString(KEY_MANUFACTURER + userId, defaults.manufacturer)
+                    .putString(KEY_BRAND + userId, defaults.brand)
+                    .putString(KEY_MODEL + userId, defaults.model)
+                    .putString(KEY_DEVICE + userId, defaults.device)
+                    .putString(KEY_PRODUCT + userId, defaults.product)
+                    .putString(KEY_FINGERPRINT + userId, defaults.fingerprint);
+        }
+        editor.putInt(KEY_PROFILE_SCHEMA + userId, PROFILE_SCHEMA_WGR_W09).commit();
     }
 
     private static String slugify(String input) {
